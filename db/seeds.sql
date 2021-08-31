@@ -1,1 +1,1 @@
--- Insert values into tables.
+-- Seed values to tables.
