@@ -223,13 +223,13 @@ const addEmployee = () => {
             {
               type: "list",
               name: "role",
-              message: "Please enter the employee's role:",
+              message: "Please select the employee's role:",
               choices: roleArray,
             },
             {
               type: "list",
               name: "manager",
-              message: "Please enter the employee's manager:",
+              message: "Please select the employee's manager:",
               choices: managerArray,
             },
           ])
@@ -274,7 +274,61 @@ const addEmployee = () => {
 
 // Update an employee role prompts to select an employee to update and their new role and this information is updated in the database.
 const updateEmployee = () => {
-  //
+    connection.query("SELECT * FROM employee", function (err, resEmployee) {
+        if (err) throw err;
+
+        let employeeArray = [];
+        for (i = 0; i < resEmployee.length; i++) {
+            employeeArray.push(resEmployee[i].first_name)
+        }
+
+        connection.query("SELECT * FROM role", function (err, resRole) {
+            if (err) throw err;
+
+            let roleArray = [];
+            for (j = 0; j < resRole.length; j++) {
+                roleArray.push(resRole[j].title);
+            }
+
+            inquirer.prompt([
+                {
+                    type: "list",
+                    name: "name",
+                    message: "Please select which employee you'd like to update:",
+                    choices: employeeArray,
+                },
+                {
+                    type: "list",
+                    name: "role",
+                    message: "Please select their new role:",
+                    choices: roleArray,
+                }
+            ])
+            .then(function (response) {
+                let employeeID;
+                for (k = 0; k < resEmployee.length; k++) {
+                    if (response.name == resEmployee[k].first_name) {
+                        employeeID = resEmployee[k].id;
+                    }
+                  }
+                  console.log(employeeID);
+
+                let roleID;
+                for (l = 0; l < resRole.length; l++) {
+                    if (response.role == resRole[l].title) {
+                        roleID = resRole[l].id;
+                    }
+                  }
+
+                connection.query("UPDATE employee SET role_id = ? WHERE id = ?", [roleID, employeeID], function (err) {
+                    if (err) throw err;
+                    console.log(response.name, "has been updated to the role of", response.role);
+                    init();
+                }
+                )
+            })
+        })
+    })
 };
 
 init();
