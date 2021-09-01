@@ -51,30 +51,6 @@ const departmentQuestion = [
   },
 ];
 
-// Add an employee prompts to enter the employee’s first name, last name, role, and manager, and that employee is added to the database.
-const employeeQuestions = [
-  {
-    type: "input",
-    name: "firstName",
-    message: "Please enter the new employee's first name:",
-  },
-  {
-    type: "input",
-    name: "lastName",
-    message: "Please enter the new employee's last name:",
-  },
-  {
-    type: "input",
-    name: "role",
-    message: "Please enter the employee's role:",
-  },
-  {
-    type: "input",
-    name: "manager",
-    message: "Please enter the employee's manager:",
-  },
-];
-
 const init = () => {
   inquirer.prompt(initialChoices).then(function (response) {
     switch (response.initialSelect) {
@@ -189,7 +165,7 @@ const addRole = () => {
       ])
       .then(function (response) {
         let departmentID;
-        for (j = 0; j < response.length; j++) {
+        for (j = 0; j < res.length; j++) {
           if (response.department == res[j].name) {
             departmentID = res[j].id;
           }
@@ -213,14 +189,92 @@ const addRole = () => {
 };
 
 // Add an employee prompts to enter the employee’s first name, last name, role, and manager, and that employee is added to the database.
-// inquirer.prompt(employeeQuestions);
 const addEmployee = () => {
-    // 
+  connection.query("SELECT * FROM role", function (err, resRole) {
+    if (err) throw err;
+
+    let roleArray = [];
+    for (i = 0; i < resRole.length; i++) {
+      roleArray.push(resRole[i].title);
+    }
+
+    connection.query(
+      "SELECT * FROM employee WHERE manager_id IS NULL",
+      function (err, resManager) {
+        if (err) throw err;
+
+        let managerArray = [];
+        for (j = 0; j < resManager.length; j++) {
+          managerArray.push(resManager[j].first_name);
+        }
+
+        inquirer
+          .prompt([
+            {
+              type: "input",
+              name: "firstName",
+              message: "Please enter the new employee's first name:",
+            },
+            {
+              type: "input",
+              name: "lastName",
+              message: "Please enter the new employee's last name:",
+            },
+            {
+              type: "list",
+              name: "role",
+              message: "Please enter the employee's role:",
+              choices: roleArray,
+            },
+            {
+              type: "list",
+              name: "manager",
+              message: "Please enter the employee's manager:",
+              choices: managerArray,
+            },
+          ])
+          .then(function (response) {
+            let roleID;
+            for (k = 0; k < resRole.length; k++) {
+              if (response.role == resRole[k].title) {
+                roleID = resRole[k].id;
+              }
+            }
+
+            let managerID;
+            for (l = 0; l < resManager.length; l++) {
+              if (response.manager == resManager[l].first_name) {
+                managerID = resManager[l].id;
+              }
+            }
+
+            connection.query(
+              "INSERT INTO employee SET ?",
+              {
+                first_name: response.firstName,
+                last_name: response.lastName,
+                role_id: roleID,
+                manager_id: managerID
+              },
+              function (err) {
+                if (err) throw err;
+                console.log(
+                  "New employee",
+                  response.firstName,
+                  "has been added."
+                );
+                init();
+              }
+            );
+          });
+      }
+    );
+  });
 };
 
 // Update an employee role prompts to select an employee to update and their new role and this information is updated in the database.
 const updateEmployee = () => {
-  // 
+  //
 };
 
 init();
