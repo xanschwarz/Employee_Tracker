@@ -14,6 +14,8 @@ Add a role prompts to enter the name, salary, and department for the role and th
 Add an employee prompts to enter the employee’s first name, last name, role, and manager, and that employee is added to the database.
 
 Update an employee role prompts to select an employee to update and their new role and this information is updated in the database.
+
+Eliminate superfluous console.logs.
 */
 
 const inquirer = require('inquirer');
@@ -84,40 +86,32 @@ const employeeQuestions = [{
     message: "Please enter the employee's manager:"
 }];
 
-function init() {
+const init = () => {
     inquirer.prompt(initialChoices)
     .then(function (response) {
         switch (response.initialSelect) {
             case 'View All Employees':
-                // function
-                console.log(response.initialSelect);
+                viewEmployees();
                 break;
             case 'Add Employee':
-                // function
-                console.log(response.initialSelect);
+                addEmployee();
                 break;
             case 'Update Employee Role':
-                // function
-                console.log(response.initialSelect);
+                updateEmployee();
                 break;
             case 'View All Roles':
-                // function
-                console.log(response.initialSelect);
+                viewRoles();
                 break;
             case 'Add Role':
-                // function
-                console.log(response.initialSelect);
+                addRole();
                 break;
             case 'View All Departments':
-                // function
-                console.log(response.initialSelect);
+                viewDepartments();
                 break;
             case 'Add Department':
-                // function
-                console.log(response.initialSelect);
+                addDepartment();
                 break;
             case 'Quit':
-                console.log(response.initialSelect);
                 connection.end();
                 break;
             default:
@@ -126,10 +120,40 @@ function init() {
     })
 }
 
+const viewDepartments = () => {
+    connection.query(
+        "SELECT * FROM department",
+        function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            init();
+        }
+    )
+}
 
+const viewRoles = () => {
+    // code
+}
 
+const viewEmployees = () => {
+    // code
+}
 
+const addDepartment = () => {
+    // code
+}
 
+const addRole = () => {
+    // code
+}
+
+const addEmployee = () => {
+    // code
+}
+
+const updateEmployee = () => {
+    // code
+}
 
 
 
