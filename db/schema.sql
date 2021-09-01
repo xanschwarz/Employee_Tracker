@@ -1,9 +1,10 @@
 -- Upon source scheme create a clean database and use that database.
+-- Create a fresh database.
 DROP DATABASE IF EXISTS tracker_db;
 CREATE DATABASE tracker_db;
 USE tracker_db;
 
--- Create tables. Each item has UUID. Tables are linked with keys as appropriate.
+-- Create tables. Each table has UUID. Tables are linked with keys as appropriate.
 CREATE TABLE department (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(30)

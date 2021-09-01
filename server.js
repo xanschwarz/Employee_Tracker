@@ -1,30 +1,8 @@
-/*
-On start the following options are presented: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role.
-
-All departments presents a formatted table showing department names and department ids.
-
-All roles presents the job title, role id, the department that role belongs to, and the salary for that role.
-
-All employees presents with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to.
-
-Add a department prompts to enter the name of the department and that department is added to the database.
-
-Add a role prompts to enter the name, salary, and department for the role and that role is added to the database.
-
-Add an employee prompts to enter the employee’s first name, last name, role, and manager, and that employee is added to the database.
-
-Update an employee role prompts to select an employee to update and their new role and this information is updated in the database.
-
-Eliminate superfluous console.logs. Better comments throughout.
-*/
-
 const inquirer = require("inquirer");
 const consoleTable = require("console.table");
 const connection = require("./config/connection");
 
-// Initial prompt questions. Add department prompt questions. Add role prompt questions. Add employee prompt questions.
-// Update employee questions to be addressed later.
-
+// Array for the top level prompt.
 const initialChoices = [
   {
     type: "list",
@@ -43,6 +21,7 @@ const initialChoices = [
   },
 ];
 
+// Array for use following prompt option to add a department.
 const departmentQuestion = [
   {
     type: "input",
@@ -51,6 +30,7 @@ const departmentQuestion = [
   },
 ];
 
+// Function run when app is initiated. Asks user what they would like to do. This function is also run at the completion of any of the options.
 const init = () => {
   inquirer.prompt(initialChoices).then(function (response) {
     switch (response.initialSelect) {
@@ -84,7 +64,7 @@ const init = () => {
   });
 };
 
-// All departments presents a formatted table showing department names and department ids.
+// View departments presents a formatted table showing department names and department ids.
 const viewDepartments = () => {
   connection.query("SELECT * FROM department", function (err, res) {
     if (err) throw err;
@@ -93,7 +73,7 @@ const viewDepartments = () => {
   });
 };
 
-// All roles presents the job title, role id, the department that role belongs to, and the salary for that role.
+// View roles presents the job title, role id, the department that role belongs to, and the salary for that role.
 const viewRoles = () => {
   connection.query(
     "SELECT role.id, role.title, department.name, role.salary FROM department INNER JOIN role ON role.department_id=department.id ORDER BY id;",
@@ -105,7 +85,7 @@ const viewRoles = () => {
   );
 };
 
-// All employees presents with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to.
+// View employees presents with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to.
 const viewEmployees = () => {
   connection.query(
     "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS Manager FROM employee INNER JOIN role ON employee.role_id=role.id INNER JOIN department ON role.department_id=department.id LEFT JOIN employee manager ON employee.manager_id = manager.id ORDER BY id;",
@@ -134,7 +114,8 @@ const addDepartment = () => {
   });
 };
 
-// Add a role prompts to enter the name, salary, and department for the role and that role is added to the database.
+// Add a role prompts to enter the name, salary, and department for the role and that role is added to the database. The department options are displayed as a list
+// to choose from, including any departments the user has added.
 const addRole = () => {
   connection.query("SELECT * FROM department", function (err, res) {
     if (err) throw err;
@@ -188,7 +169,9 @@ const addRole = () => {
   });
 };
 
-// Add an employee prompts to enter the employee’s first name, last name, role, and manager, and that employee is added to the database.
+// Add an employee prompts to enter the employee’s first name, last name, role, and manager, and that employee is added to the database. The role options are
+// displayed as a list to choose from, including any roles the user has added. The manager options are also displayed as a list, omitting any employee that is
+// not managing other employees.
 const addEmployee = () => {
   connection.query("SELECT * FROM role", function (err, resRole) {
     if (err) throw err;
@@ -272,7 +255,8 @@ const addEmployee = () => {
   });
 };
 
-// Update an employee role prompts to select an employee to update and their new role and this information is updated in the database.
+// Update an employee role prompts to select an employee to update and their new role and this information is updated in the database. The employee and roles
+// options are displayed as lists to choose from, including any employees and/or roles the user has added.
 const updateEmployee = () => {
     connection.query("SELECT * FROM employee", function (err, resEmployee) {
         if (err) throw err;
@@ -311,7 +295,6 @@ const updateEmployee = () => {
                         employeeID = resEmployee[k].id;
                     }
                   }
-                  console.log(employeeID);
 
                 let roleID;
                 for (l = 0; l < resRole.length; l++) {

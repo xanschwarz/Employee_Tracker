@@ -1,3 +1,4 @@
+-- Inserts simulated values into the department, role, and employee tables.
 INSERT INTO department (name)
 VALUE ("Engineering");
 INSERT INTO department (name)
