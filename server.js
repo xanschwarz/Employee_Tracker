@@ -132,11 +132,25 @@ const viewDepartments = () => {
 }
 
 const viewRoles = () => {
-    // code
+    connection.query(
+        "SELECT role.id, role.title, department.name, role.salary FROM department INNER JOIN role ON role.department_id=department.id ORDER BY id;",
+        function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            init();
+        }
+    )
 }
 
 const viewEmployees = () => {
-    // code
+    connection.query(
+        "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS Manager FROM employee INNER JOIN role ON employee.role_id=role.id INNER JOIN department ON role.department_id=department.id LEFT JOIN employee manager ON employee.manager_id = manager.id ORDER BY id;",
+        function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            init();
+        }
+    )
 }
 
 const addDepartment = () => {
