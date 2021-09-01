@@ -15,7 +15,7 @@ Add an employee prompts to enter the employee’s first name, last name, role, a
 
 Update an employee role prompts to select an employee to update and their new role and this information is updated in the database.
 
-Eliminate superfluous console.logs.
+Eliminate superfluous console.logs. Better comments throughout.
 */
 
 const inquirer = require('inquirer');
@@ -120,6 +120,7 @@ const init = () => {
     })
 }
 
+// All departments presents a formatted table showing department names and department ids.
 const viewDepartments = () => {
     connection.query(
         "SELECT * FROM department",
@@ -131,6 +132,7 @@ const viewDepartments = () => {
     )
 }
 
+// All roles presents the job title, role id, the department that role belongs to, and the salary for that role.
 const viewRoles = () => {
     connection.query(
         "SELECT role.id, role.title, department.name, role.salary FROM department INNER JOIN role ON role.department_id=department.id ORDER BY id;",
@@ -142,6 +144,7 @@ const viewRoles = () => {
     )
 }
 
+// All employees presents with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to.
 const viewEmployees = () => {
     connection.query(
         "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS Manager FROM employee INNER JOIN role ON employee.role_id=role.id INNER JOIN department ON role.department_id=department.id LEFT JOIN employee manager ON employee.manager_id = manager.id ORDER BY id;",
@@ -153,18 +156,34 @@ const viewEmployees = () => {
     )
 }
 
+// Add a department prompts to enter the name of the department and that department is added to the database.
 const addDepartment = () => {
-    // code
+    inquirer.prompt(departmentQuestion)
+    .then(function (response) {
+        connection.query(
+            "INSERT INTO department SET ?",
+            {
+                name: response.department
+            },
+        function (err) {
+            if (err) throw err;
+            console.table(response.department + " added into Departments.");
+            init();
+        })
+    })
 }
 
+// Add a role prompts to enter the name, salary, and department for the role and that role is added to the database.
 const addRole = () => {
-    // code
+    inquirer.prompt(roleQuestions)
 }
 
+// Add an employee prompts to enter the employee’s first name, last name, role, and manager, and that employee is added to the database.
 const addEmployee = () => {
-    // code
+    inquirer.prompt(employeeQuestions)
 }
 
+// Update an employee role prompts to select an employee to update and their new role and this information is updated in the database.
 const updateEmployee = () => {
     // code
 }
